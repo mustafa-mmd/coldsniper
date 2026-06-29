@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ColdSniper - AI Cold Email Generator</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@300;500;800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --accent: #10b981;
+        --accent-dark: #059669;
+      }
+
+      body {
+        transition:
+          background-color 0.5s ease,
+          color 0.5s ease;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        overflow-x: hidden;
+      }
+
+      body.dark {
+        background: #0a0e27;
+        color: #fff;
+      }
+      body.light {
+        background: #f0fdf4;
+        color: #0f2818;
+      }
+
+      .mesh {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+
+      .dark .mesh {
+        background:
+          radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15), transparent 50%),
+          radial-gradient(at 100% 100%, rgba(34, 197, 94, 0.1), transparent 50%);
+      }
+
+      .light .mesh {
+        background:
+          radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12), transparent 50%),
+          radial-gradient(
+            at 100% 100%,
+            rgba(134, 239, 172, 0.3),
+            transparent 50%
+          );
+      }
+
+      .glass-container {
+        backdrop-filter: blur(20px);
+      }
+
+      .dark .glass-container {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+      }
+
+      .light .glass-container {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      .theme-input {
+        transition: all 0.3s ease;
+      }
+
+      .dark .theme-input {
+        background: rgba(16, 185, 129, 0.05);
+        color: white;
+      }
+
+      .light .theme-input {
+        background: white;
+        color: #0f2818;
+      }
+
+      .killing-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+      }
+
+      .killing-btn:hover {
+        transform: translateY(-3px);
+      }
+
+      .killing-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .error-box {
+        border-color: #ef4444 !important;
+      }
+
+      .copy-btn {
+        transition: all 0.2s ease;
+      }
+
+      .theme-input:focus-visible,
+      .killing-btn:focus-visible,
+      .copy-btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+
+  <body class="dark min-h-screen flex items-center justify-center p-4">
+    <div class="mesh"></div>
+
+    <!-- Theme Toggle -->
+    <button
+      onclick="toggleTheme()"
+      class="fixed top-6 right-6 w-12 h-12 rounded-full glass-container"
+    >
+      <i id="themeIcon" class="fa-solid fa-moon text-emerald-400"></i>
+    </button>
+
+    <main class="w-full max-w-[900px]">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-5xl font-bold">
+          Cold<span class="text-emerald-400">Sniper</span>
+        </h1>
+        <p class="opacity-70 mt-2">AI Cold Email Generator</p>
+      </div>
+
+      <!-- Form -->
+      <div class="glass-container p-10 rounded-3xl space-y-6">
+        <input
+          id="clientName"
+          class="theme-input w-full p-4 rounded-xl border"
+          placeholder="Prospect Name"
+          aria-label="Prospect name"
+          onkeydown="if (event.key === 'Enter') generateOutreach();"
+        />
+
+        <input
+          id="clientEmail"
+          type="email"
+          class="theme-input w-full p-4 rounded-xl border"
+          placeholder="Email Address"
+          aria-label="Email address"
+          onkeydown="if (event.key === 'Enter') generateOutreach();"
+        />
+        <p
+          id="emailError"
+          class="hidden text-red-400 text-sm -mt-3"
+          role="alert"
+        >
+          Enter a valid email address.
+        </p>
+
+        <input
+          id="service"
+          class="theme-input w-full p-4 rounded-xl border"
+          placeholder="Your Offer"
+          aria-label="Your offer or service"
+          onkeydown="if (event.key === 'Enter') generateOutreach();"
+        />
+
+        <div class="flex items-center gap-3 opacity-50">
+          <div class="flex-1 h-px bg-current opacity-20"></div>
+          <span class="text-xs uppercase tracking-wider">or</span>
+          <div class="flex-1 h-px bg-current opacity-20"></div>
+        </div>
+
+        <textarea
+          id="jobDescription"
+          rows="4"
+          class="theme-input w-full p-4 rounded-xl border resize-none"
+          placeholder="Paste a job description from LinkedIn to send a tailored application instead of a pitch"
+          aria-label="Job description (optional)"
+        ></textarea>
+
+        <button
+          id="btn"
+          onclick="generateOutreach()"
+          class="killing-btn w-full py-4 rounded-xl font-bold text-white flex justify-center items-center gap-3"
+        >
+          <span id="btnText">Generate Email</span>
+          <i id="icon" class="fa-solid fa-wand-magic-sparkles"></i>
+          <div
+            id="loader"
+            class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+          ></div>
+        </button>
+      </div>
+
+      <!-- Result -->
+      <div id="resultBox" class="hidden mt-8" aria-live="polite">
+        <div
+          id="resultCard"
+          class="glass-container p-6 rounded-2xl border-l-4 border-emerald-500 flex items-center gap-4"
+        >
+          <i
+            id="resultIcon"
+            class="fa-solid fa-circle-check text-emerald-400 text-2xl"
+          ></i>
+          <div>
+            <p id="resultTitle" class="font-bold">Email sent</p>
+            <p id="resultDetail" class="text-sm opacity-70 mt-1"></p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // ---- CONFIG -------------------------------------------------------
+      // Swap this for your n8n PRODUCTION webhook URL once the workflow is
+      // activated (toggle ON in the n8n editor, top right).
+      // Test URLs (/webhook-test/...) only fire once per "Listen for test
+      // event" click and will break this app after the first successful call.
+      const WEBHOOK_URL =
+        "http://localhost:5678/webhook/83a7c1cf-2f97-4816-9e4c-d5867ee17537";
+      const REQUEST_TIMEOUT_MS = 45000; // generous, since Gemini retries can take a few seconds
+      // --------------------------------------------------------------------
+
+      function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById("themeIcon");
+
+        if (body.classList.contains("dark")) {
+          body.classList.replace("dark", "light");
+          icon.classList.replace("fa-moon", "fa-sun");
+        } else {
+          body.classList.replace("light", "dark");
+          icon.classList.replace("fa-sun", "fa-moon");
+        }
+      }
+
+      function isValidEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
+
+      // n8n's "Respond to Webhook" node could return the email in a few
+      // different shapes depending on how the workflow is wired. Handle
+      // all of them instead of assuming { subject, body }.
+      function extractEmail(data) {
+        // Case 1: workflow already split it into fields
+        if (
+          data &&
+          typeof data.subject === "string" &&
+          typeof data.body === "string"
+        ) {
+          return { subject: data.subject, body: data.body };
+        }
+
+        // Case 2: workflow returns one raw text block (the common case,
+        // since the LLM prompt is instructed to output "Subject: ..." directly)
+        const raw =
+          (typeof data === "string" && data) ||
+          data?.output ||
+          data?.text ||
+          data?.message ||
+          data?.content ||
+          "";
+
+        if (!raw) return null;
+
+        const match = raw.match(/^Subject:\s*(.+?)\n+([\s\S]+)$/i);
+        if (match) {
+          return { subject: match[1].trim(), body: match[2].trim() };
+        }
+
+        // Fallback: no clean "Subject:" line found, show it as-is
+        return { subject: "Cold Outreach", body: raw.trim() };
+      }
+
+      async function generateOutreach() {
+        const client = document.getElementById("clientName").value.trim();
+        const email = document.getElementById("clientEmail").value.trim();
+        const service = document.getElementById("service").value.trim();
+        const jobDescription = document
+          .getElementById("jobDescription")
+          .value.trim();
+        const emailError = document.getElementById("emailError");
+        const emailInput = document.getElementById("clientEmail");
+
+        const btn = document.getElementById("btn");
+        const btnText = document.getElementById("btnText");
+        const loader = document.getElementById("loader");
+        const icon = document.getElementById("icon");
+
+        const resultBox = document.getElementById("resultBox");
+        const resultCard = document.getElementById("resultCard");
+        const resultIcon = document.getElementById("resultIcon");
+        const resultTitle = document.getElementById("resultTitle");
+        const resultDetail = document.getElementById("resultDetail");
+
+        if (!client || !email || (!service && !jobDescription)) {
+          alert(
+            "Please fill in the name, email, and either an offer or a job description",
+          );
+          return;
+        }
+
+        if (!isValidEmail(email)) {
+          emailError.classList.remove("hidden");
+          emailInput.classList.add("error-box");
+          return;
+        }
+        emailError.classList.add("hidden");
+        emailInput.classList.remove("error-box");
+
+        btn.disabled = true;
+        btnText.innerText = "Generating...";
+        loader.classList.remove("hidden");
+        icon.classList.add("hidden");
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(
+          () => controller.abort(),
+          REQUEST_TIMEOUT_MS,
+        );
+
+        try {
+          const response = await fetch(WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              clientName: client,
+              clientEmail: email,
+              service: service,
+              jobDescription: jobDescription,
+            }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            throw new Error(`Webhook returned ${response.status}`);
+          }
+
+          const rawText = await response.text();
+          console.log("Webhook raw response:", rawText);
+          let data;
+          try {
+            data = JSON.parse(rawText);
+          } catch {
+            // Workflow responded with plain text instead of JSON — that's fine,
+            // treat the whole body as the raw email.
+            data = rawText;
+          }
+          const parsed = extractEmail(data);
+
+          if (!parsed) {
+            throw new Error("Empty response from workflow");
+          }
+
+          // Success — confirm only, never render the email content in the UI.
+          resultBox.classList.remove("hidden");
+          resultCard.classList.remove("border-red-500");
+          resultCard.classList.add("border-emerald-500");
+          resultIcon.className =
+            "fa-solid fa-circle-check text-emerald-400 text-2xl";
+          resultTitle.innerText = "Email sent";
+          resultDetail.innerText = `Sent to ${email}`;
+
+          document.getElementById("clientName").value = "";
+          document.getElementById("clientEmail").value = "";
+          document.getElementById("service").value = "";
+          document.getElementById("jobDescription").value = "";
+        } catch (err) {
+          clearTimeout(timeoutId);
+          resultBox.classList.remove("hidden");
+          resultCard.classList.remove("border-emerald-500");
+          resultCard.classList.add("border-red-500");
+          resultIcon.className =
+            "fa-solid fa-circle-xmark text-red-400 text-2xl";
+          resultTitle.innerText = "Couldn't send";
+
+          if (err.name === "AbortError") {
+            resultDetail.innerText =
+              "Request timed out. The model node may be retrying — check the n8n execution log, then try again.";
+          } else if (err instanceof TypeError) {
+            // fetch() throws a generic TypeError for network/CORS/DNS failures
+            // across all browsers (the exact message differs by browser).
+            resultDetail.innerText =
+              "Couldn't reach the webhook. Check that the n8n workflow is active, the URL is correct, and CORS is allowed on the Webhook node.";
+          } else {
+            resultDetail.innerText = err.message;
+          }
+          console.error("ColdSniper generation error:", err);
+        }
+
+        btn.disabled = false;
+        btnText.innerText = "Generate Email";
+        loader.classList.add("hidden");
+        icon.classList.remove("hidden");
+      }
+
+      function copyEmail() {
+        const text = document.getElementById("emailContent").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          const copyBtn = document.getElementById("copyBtn");
+          const original = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+          setTimeout(() => (copyBtn.innerHTML = original), 1500);
+        });
+      }
+    </script>
+  </body>
+</html>

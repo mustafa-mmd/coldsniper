@@ -1,0 +1,47 @@
+You are writing ONE outreach email. Output ONLY the email — nothing before "Subject:" and nothing after the signature. No markdown, no asterisks, no bold, no quotation marks, no code fences, no commentary.
+
+Client/Company name: {{ $json.body.clientName }}
+Service being offered (used only if no job description is provided): {{ $json.body.service }}
+Job description (if provided, this is a job application, NOT a service pitch): {{ $json.body.jobDescription }}
+
+Sender:
+Name: Mustafa Jamal
+Title: Full Stack Developer | AI Automation Engineer
+Portfolio: https://mustafa-new-portfolio-website.vercel.app/
+CV: https://drive.google.com/uc?export=download&id=19LdbCz0Mq73ayC7X8fOUVqMKUAwlI4f0
+
+Background:
+2+ years building production-grade systems. Specializes in MERN stack, Next.js 14 / React 19, AI automation (n8n, Make.com, Zapier), LLM integrations (Gemini 2.5 Flash, OpenAI, Claude), RAG pipelines and vector databases (Qdrant Cloud), FastAPI backends, JWT/OAuth 2.0/RBAC, and scalable SaaS systems.
+
+Notable work: Built HaqDar AI (legal intelligence SaaS, 80+ legal categories, multilingual, AI Q&A). Delivered 10+ production MERN/Next.js apps with 35% performance gains. Built AI automation pipelines integrating CRMs, email, and APIs via n8n/Make.com. Engineered backends with sub-200ms API response and 99.9% uptime.
+
+Goal: earn a reply or a short call — not a hard sell.
+
+MODE DETECTION:
+- If a job description is provided above, this is a JOB APPLICATION email. Follow the JOB APPLICATION rules below instead of the COLD OUTREACH rules.
+- If no job description is provided, follow the COLD OUTREACH rules.
+
+COLD OUTREACH RULES (only when no job description is given):
+- Mention exactly ONE technical capability — pick the one most relevant to the service being offered, not a random one.
+
+JOB APPLICATION RULES (only when a job description is given):
+- Identify the role title and company name directly from the job description text — never invent one if it isn't stated.
+- From the listed requirements, identify the 2–3 skills that genuinely overlap with the background listed above. Never claim a skill that isn't in that background, even if the listing asks for it.
+- Tie 1–2 real project outcomes directly to the listed requirements, picking whichever are most relevant to this specific listing.
+- Mentioning 2–3 technical skills is fine here — the "one capability" rule above doesn't apply in this mode.
+- CTA should express interest in the role and request a short conversation.
+- Total length under 200 words including the signature block.
+
+RULES THAT APPLY TO BOTH MODES:
+- Greet using the client's first name only, even if a full name is given. If the name looks like a company rather than a person, open without an awkward personal greeting.
+- No placeholders of any kind ([Name], [Company], etc.) — every detail must read as final.
+- Total length under 180 words including the signature block (200 in JOB APPLICATION mode).
+- Reference the portfolio and CV by NAME ONLY in the body (e.g., "my portfolio" / "my CV") — do NOT include the actual URLs anywhere in the body text. The full links already appear once in the signature block at the end; never repeat them earlier in the email.
+- Never write "I came across your profile," "I saw your job post," "I saw your listing," or any similar AI-sounding opener.
+- End with EXACTLY this signature, unmodified:
+
+Best regards,
+Mustafa Jamal
+Full Stack Developer | AI Automation Engineer
+Portfolio: https://mustafa-new-portfolio-website.vercel.app/
+CV: https://drive.google.com/uc?export=download&id=19LdbCz0Mq73ayC7X8fOUVqMKUAwlI4f0
